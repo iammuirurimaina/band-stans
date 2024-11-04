@@ -1,4 +1,4 @@
-// Mock backend data structure and current session
+// Mock backend data structure with extensive data
 const mockBackend = {
     users: JSON.parse(localStorage.getItem("users")) || [],
     currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
@@ -7,23 +7,48 @@ const mockBackend = {
             id: 1,
             title: "North American Tour Announced!",
             date: "February 15, 2024",
-            content: "We're thrilled to announce our upcoming North American tour!",
+            content: "We're thrilled to announce our North American tour! Catch us live across Canada and the U.S., bringing the Fab Four magic everywhere we go!",
+            imageUrl: "https://via.placeholder.com/600x300",
+            comments: [
+                { user: "fan1", comment: "Can't wait to see you guys!" },
+                { user: "beatlesFan", comment: "Booked my tickets already!" }
+            ]
+        },
+        {
+            id: 2,
+            title: "New Cover Release: Hey Jude",
+            date: "February 10, 2024",
+            content: "Our latest Beatles cover, 'Hey Jude,' is out now. Listen to our unique spin while honoring the classic!",
+            imageUrl: "https://via.placeholder.com/600x300",
+            comments: [
+                { user: "musicLover92", comment: "Amazing rendition!" },
+                { user: "johnnyBGood", comment: "You did it justice!" }
+            ]
+        },
+        {
+            id: 3,
+            title: "Behind the Scenes: Recording Process",
+            date: "January 25, 2024",
+            content: "Ever wondered how we record our covers? Here's a sneak peek into our studio sessions.",
             imageUrl: "https://via.placeholder.com/600x300",
             comments: []
         }
     ],
     tourDates: [
-        {
-            location: "Toronto, ON",
-            venue: "Maple Leaf Gardens",
-            date: "March 15, 2024",
-            time: "8:00 PM"
-        }
+        { location: "Toronto, ON", venue: "Maple Leaf Gardens", date: "March 15, 2024", time: "8:00 PM" },
+        { location: "Montreal, QC", venue: "Bell Centre", date: "March 18, 2024", time: "7:30 PM" },
+        { location: "Vancouver, BC", venue: "Rogers Arena", date: "March 22, 2024", time: "8:00 PM" },
+        { location: "Calgary, AB", venue: "Scotiabank Saddledome", date: "March 25, 2024", time: "7:30 PM" },
+        { location: "New York, NY", venue: "Madison Square Garden", date: "April 5, 2024", time: "8:00 PM" }
     ],
-    fanForum: []
+    fanForum: [
+        { user: "beatlesFan92", post: "Who else loves the new cover?", replies: ["Absolutely!", "It's awesome!"] },
+        { user: "johnnyBGood", post: "Favorite song by TDB so far?", replies: ["Hey Jude!", "Let it Be is top-notch!"] },
+        { user: "musicLover92", post: "Where are you watching TDB perform?", replies: ["Toronto!", "See you in Vancouver!"] }
+    ]
 };
 
-// Helper functions for local storage
+// Helper function for saving data to local storage
 function saveMockData() {
     localStorage.setItem("users", JSON.stringify(mockBackend.users));
     localStorage.setItem("currentUser", JSON.stringify(mockBackend.currentUser));
@@ -104,7 +129,21 @@ function addFanPost(postContent) {
     renderFanForum();
 }
 
-// Render Functions (Existing functions with slight adjustments to allow user actions)
+// Render Functions
+function renderHome() {
+    const homeContainer = document.querySelector("[x-show='activeTab === home']");
+    homeContainer.innerHTML = `
+        <h2 class="text-3xl font-bold">Welcome to The Band Stans</h2>
+        <p class="mt-4 text-gray-600">The hottest new band, bringing the magic of the Fab Four to North America!</p>
+        <div class="bg-yellow-100 p-4 rounded-lg mt-6">
+            <h3 class="text-xl font-bold mb-2">Upcoming Show: ${mockBackend.tourDates[0].location}</h3>
+            <p>Venue: ${mockBackend.tourDates[0].venue}</p>
+            <p>Date: ${mockBackend.tourDates[0].date}</p>
+            <button onclick="buyTicket('${mockBackend.tourDates[0].location}')" class="bg-yellow-500 text-white px-4 py-2 rounded mt-4">Buy Tickets</button>
+        </div>
+    `;
+}
+
 function renderNews() {
     const newsContainer = document.getElementById('news-container');
     newsContainer.innerHTML = '';
@@ -144,8 +183,27 @@ function renderTourDates() {
     });
 }
 
-// Run Render Functions on Page Load
+function renderFanForum() {
+    const fanForumContainer = document.getElementById('fan-forum-container');
+    fanForumContainer.innerHTML = '';
+
+    mockBackend.fanForum.forEach(post => {
+        const postElement = document.createElement('div');
+        postElement.className = "bg-white p-6 rounded-lg shadow-lg mb-4";
+        postElement.innerHTML = `
+            <p><strong>${post.user}</strong>: ${post.post}</p>
+            <button onclick="addFanPost('${post.user}', 'Me too!')" class="text-blue-500">Reply</button>
+            <div class="replies">
+                ${post.replies.map(reply => `<p>${reply}</p>`).join('')}
+            </div>
+        `;
+        fanForumContainer.appendChild(postElement);
+    });
+}
+
+// Initialize render functions on page load
 document.addEventListener("DOMContentLoaded", function() {
+    renderHome();
     renderNews();
     renderTourDates();
     renderFanForum();
